@@ -1,0 +1,111 @@
+#pragma once
+
+#include "CDT.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/random.hpp>
+#include <cmath>
+#include <iostream>
+
+enum GAMEOBJ_TYPE
+{
+	// list of game object types
+	TYPE_PLAYER = 0,
+
+	TYPE_ENEMY,
+	TYPE_ENEMY_WARRIOR,
+	TYPE_ENEMY_ARCHER,
+	TYPE_ENEMY_MAGE,
+	TYPE_ENEMY_END,
+
+	TYPE_WEAPON_SWORD,
+	TYPE_WEAPON_BOW,
+	TYPE_WEAPON_FIRE_WAND,
+
+	TYPE_WEAPON_BULLET,
+	TYPE_WEAPON_BOW_ARROW,
+	TYPE_WEAPON_FIRE_SPELL
+};
+
+class GameObject
+{
+	private:
+		CDTMesh*		mesh;
+		CDTTex*			tex;
+		int				type;				// enum GAMEOBJ_TYPE
+		int				flag;				// 0 - inactive, 1 - active
+		glm::vec3		position;			// usually we will use only x and y
+		glm::vec3		velocity;			// usually we will use only x and y
+		glm::vec3		scale;				// usually we will use only x and y
+		float			orientation;		// 0 radians is 3 o'clock, PI/2 radian is 12 o'clock
+		glm::mat4		modelMatrix;
+		bool			animation;
+		int				totalFrame;
+		int				currentFrame;
+		float			offset;				// offset value of each frame
+		float			offsetX;			// assume single row sprite sheet
+		float			offsetY;			// will be set to 0 for this single row implementation
+		bool			collision;			// Used for check collision
+		
+	public:
+		virtual ~GameObject();
+
+		// Function
+		float getLeftBound() const;
+		float getRightBound() const;
+		float getTopBound() const;
+		float getBottomBound() const;
+
+		/* GameObject */
+		// Getter
+		CDTMesh* getMesh() const;
+		CDTTex* getTexture() const;
+		int getType() const;
+		int getFlag() const;
+		glm::vec3 getPosition() const;
+		glm::vec3 getVelocity() const;
+		glm::vec3 getScale() const;
+		float getOrientation() const;
+		glm::mat4 getModelMatrix() const;
+		int getTotalFrame() const;
+		int getCurrentFrame() const;
+		bool isAnimation() const;
+		float getOffset() const;
+		float getOffsetX() const;
+		float getOffsetY() const;
+		bool hasCollision() const;
+
+		//Setter
+		void setMesh(CDTMesh* mesh);
+		void setTexture(CDTTex* texture);
+		void setType(const int& type);
+		void setFlag(const int& flag);
+		void setPosition(const glm::vec3& position);
+		void setPositionX(const float& position_x);
+		void setPositionY(const float& position_y);
+		// virtual for Bullet class
+		virtual void updatePosition(const glm::vec3& position);
+
+		void setVelocity(const glm::vec3& velocity);
+		void setVelocityX(const float& velocity_x);
+		void setVelocityY(const float& velocity_y);
+		void increaseVelocityX(const float& velocity_x);
+		void increaseVelocityY(const float& velocity_y);
+
+		void setScale(const glm::vec3& scale);
+		// virtual for Character class
+		virtual void setScaleX(const float& scale_x);
+		void setScaleY(const float& scale_y);
+		void setOrientation(const float& orientation);
+		void setModelMatrix(const glm::mat4& modelMatrix);
+
+		void setTotalFrame(const int& totalFrame);
+		void setCurrentFrame(const int& frame);
+		void setAnimation(const bool& anim);
+		
+		void setOffset(const float& offset);
+		void setOffsetX(const float& x);
+		void setOffsetY(const float& y);
+		
+		void setCollision(const bool& collision);
+};
