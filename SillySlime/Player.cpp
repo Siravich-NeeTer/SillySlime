@@ -3,6 +3,7 @@
 Player::Player()
 {
 	setCollision(true);
+	this->fly = false;
 }
 
 void Player::getInput()
@@ -10,12 +11,6 @@ void Player::getInput()
 	//+ Moving the Player
 		//	- W:	jumping
 		//	- AD:	go left, go right
-	if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) && (isJumping() == false))
-	{
-		this->setVelocityY(JUMP_VELOCITY);
-		this->setJumping(true);
-		this->setAnimation(false);
-	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		if (this->getScale().x > 0.0f)
@@ -31,7 +26,14 @@ void Player::getInput()
 				this->getWeapon()->setOrientation(180.0f * DegToRad);
 			}
 		}
-		this->setVelocityX(-MOVE_VELOCITY_PLAYER);
+		if (this->getWeapon()->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_BOW)
+		{
+			this->setVelocityX(-MOVE_VELOCITY_PLAYER * 1.25f);
+		}
+		else
+		{
+			this->setVelocityX(-MOVE_VELOCITY_PLAYER);
+		}
 		this->setAnimation((isJumping() == false ? true : false));
 	}
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
@@ -49,7 +51,14 @@ void Player::getInput()
 				this->getWeapon()->setOrientation(0.0f * DegToRad);
 			}
 		}
-		this->setVelocityX(MOVE_VELOCITY_PLAYER);
+		if (this->getWeapon()->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_BOW)
+		{
+			this->setVelocityX(MOVE_VELOCITY_PLAYER * 1.25f);
+		}
+		else
+		{
+			this->setVelocityX(MOVE_VELOCITY_PLAYER);
+		}
 		this->setAnimation((isJumping() == false ? true : false));
 	}
 	else
@@ -64,3 +73,18 @@ void Player::getInput()
 		this->setOffsetX(0.75f);	// the 4th sprite of the sheet of 4
 	}
 }
+
+void Player::decreaseHP(float hp)
+{
+	if (this->getWeapon()->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_SWORD)
+	{
+		Character::decreaseHP(hp * 0.5f);
+	}
+	else
+	{
+		Character::decreaseHP(hp);
+	}
+}
+
+void Player::setFlying(const bool& fly) { this->fly = fly; }
+bool Player::isFlying() const { return this->fly; }

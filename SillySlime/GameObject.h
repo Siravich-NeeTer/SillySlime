@@ -10,7 +10,9 @@
 enum GAMEOBJ_TYPE
 {
 	// list of game object types
-	TYPE_PLAYER = 0,
+	TYPE_BG = 0,
+	TYPE_EXIT,
+	TYPE_PLAYER,
 
 	TYPE_ENEMY,
 	TYPE_ENEMY_WARRIOR,
@@ -21,17 +23,35 @@ enum GAMEOBJ_TYPE
 	TYPE_WEAPON_SWORD,
 	TYPE_WEAPON_BOW,
 	TYPE_WEAPON_FIRE_WAND,
+	TYPE_WEAPON_SLIME,
 
 	TYPE_WEAPON_BULLET,
 	TYPE_WEAPON_BOW_ARROW,
-	TYPE_WEAPON_FIRE_SPELL
+	TYPE_WEAPON_FIRE_SPELL,
+	TYPE_WEAPON_SLIME_BALL,
+
+	TYPE_UI,
+	TYPE_UI_BAR,
+	TYPE_UI_HEALTH,
+	TYPE_UI_HEALTH_BAR,
+	TYPE_UI_WALK,
+	TYPE_UI_JUMP,
+	TYPE_UI_LEFT_CLICK,
+	TYPE_UI_RIGHT_CLICK,
+	TYPE_UI_TYPE,
+	TYPE_UI_TYPE_NORMAL,
+	TYPE_UI_TYPE_WARRIOR,
+	TYPE_UI_TYPE_ARCHER,
+	TYPE_UI_TYPE_MAGE
 };
 
 class GameObject
 {
-	private:
+	public:
 		CDTMesh*		mesh;
 		CDTTex*			tex;
+
+	private:
 		int				type;				// enum GAMEOBJ_TYPE
 		int				flag;				// 0 - inactive, 1 - active
 		glm::vec3		position;			// usually we will use only x and y
@@ -46,6 +66,7 @@ class GameObject
 		float			offsetX;			// assume single row sprite sheet
 		float			offsetY;			// will be set to 0 for this single row implementation
 		bool			collision;			// Used for check collision
+		bool			cull;
 		
 	public:
 		virtual ~GameObject();
@@ -74,6 +95,7 @@ class GameObject
 		float getOffsetX() const;
 		float getOffsetY() const;
 		bool hasCollision() const;
+		bool isCulling() const;
 
 		//Setter
 		void setMesh(CDTMesh* mesh);
@@ -108,4 +130,5 @@ class GameObject
 		void setOffsetY(const float& y);
 		
 		void setCollision(const bool& collision);
+		void setCulling(const bool& cull);
 };

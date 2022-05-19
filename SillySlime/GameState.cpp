@@ -3,34 +3,66 @@
 GameObject* GameState::getGameObjectType(int type)
 {
 	GameObject* obj;
-	if (type >= GAMEOBJ_TYPE::TYPE_WEAPON_BULLET)
+	if (type >= GAMEOBJ_TYPE::TYPE_UI)
+	{
+		obj = new GameObject();
+	}
+	else if (type >= GAMEOBJ_TYPE::TYPE_WEAPON_BULLET)
 	{
 		obj = new Bullet();
 	}
 	else if (type == GAMEOBJ_TYPE::TYPE_WEAPON_SWORD)
 	{
 		obj =  new MeleeWeapon();
-		dynamic_cast<MeleeWeapon*>(obj)->setCooldown(3.0f);
+		dynamic_cast<MeleeWeapon*>(obj)->setATK(15.0f);
+		dynamic_cast<MeleeWeapon*>(obj)->setCooldown(1.5f);
+		obj->setCollision(false);
 	}
 	else if (type == GAMEOBJ_TYPE::TYPE_WEAPON_BOW)
 	{
 		obj = new RangeWeapon();
+		dynamic_cast<RangeWeapon*>(obj)->setATK(25.0f);
 		dynamic_cast<RangeWeapon*>(obj)->setBulletType(TYPE_WEAPON_BOW_ARROW);
-		dynamic_cast<RangeWeapon*>(obj)->setCooldown(1.0f);
+		dynamic_cast<RangeWeapon*>(obj)->setCooldown(0.75f);
+		obj->setCollision(false);
 	}
 	else if (type == GAMEOBJ_TYPE::TYPE_WEAPON_FIRE_WAND)
 	{
 		obj = new SpellWeapon();
+		dynamic_cast<SpellWeapon*>(obj)->setATK(30.0f);
 		dynamic_cast<SpellWeapon*>(obj)->setBulletType(TYPE_WEAPON_FIRE_SPELL);
-		dynamic_cast<SpellWeapon*>(obj)->setCooldown(1.0f);
+		dynamic_cast<SpellWeapon*>(obj)->setCooldown(0.75f);
+		obj->setCollision(false);
 	}
-	else if (type == GAMEOBJ_TYPE::TYPE_ENEMY)
+
+	else if (type == GAMEOBJ_TYPE::TYPE_WEAPON_SLIME)
+	{
+		obj = new RangeWeapon();
+		dynamic_cast<RangeWeapon*>(obj)->setATK(25.0f);
+		dynamic_cast<RangeWeapon*>(obj)->setBulletType(TYPE_WEAPON_SLIME_BALL);
+		dynamic_cast<RangeWeapon*>(obj)->setCooldown(1.0f);
+		obj->setCollision(false);
+	}
+	else if (type >= GAMEOBJ_TYPE::TYPE_ENEMY)
 	{
 		obj = new Enemy();
+		if (type == GAMEOBJ_TYPE::TYPE_ENEMY_WARRIOR)
+		{
+			dynamic_cast<Enemy*>(obj)->setMaxHP(110.0f);
+		}
+		else if (type == GAMEOBJ_TYPE::TYPE_ENEMY_ARCHER)
+		{
+			dynamic_cast<Enemy*>(obj)->setMaxHP(90.0f);
+		}
+		else
+		{
+			dynamic_cast<Enemy*>(obj)->setMaxHP(75.0f);
+		}
 	}
 	else if (type == GAMEOBJ_TYPE::TYPE_PLAYER)
 	{
 		obj = new Player();
+		dynamic_cast<Player*>(obj)->setMaxHP(250.0f);
 	}
 	else
 	{
@@ -87,12 +119,10 @@ void GameState::GameObjectDestroy(GameObject* const& pInst, int& sNumGameObj)
 	GameObject*& ptr = const_cast<GameObject*&>(pInst);
 	delete pInst;
 	ptr = nullptr;
-	if (pInst == nullptr) { std::cout << "FULLY DELETED\n"; }
 	sNumGameObj--;
 }
 
-
-bool GameState::isCollide(const GameObject* obj1, const GameObject* obj2, const float& offsetA, const float& offsetB)
+bool GameState::willCollide(const GameObject* obj1, const GameObject* obj2, const float& offsetA, const float& offsetB)
 {
 	float rightA = obj1->getRightBound() - offsetA;
 	float leftA = obj1->getLeftBound() + offsetA;
@@ -105,6 +135,16 @@ bool GameState::isCollide(const GameObject* obj1, const GameObject* obj2, const 
 	float bottomB = obj2->getBottomBound() + offsetB;
 
 	return !(leftA > rightB || leftB > rightA || bottomA > topB || bottomB > topA);
+}
+
+bool GameState::isCollide(const GameObject* obj1, const GameObject* obj2, const float& offsetA, const float& offsetB)
+{
+	if (obj1->hasCollision() == false || obj2->hasCollision() == false)
+	{
+		return false;
+	}
+
+	return willCollide(obj1, obj2, offsetA, offsetB);
 }
 
 //+ This fucntion return collison flags

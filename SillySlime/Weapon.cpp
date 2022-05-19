@@ -48,18 +48,14 @@ void Weapon::updateWeaponDirection()
 
 void Weapon::updateWeaponCooldown(double dt)
 {
-	/* Decrease Cooldown */
-	if ((this->weaponType != WEAPON_TYPE::WEAPON_TYPE_MELEE)|| (this->weaponType == WEAPON_TYPE::WEAPON_TYPE_MELEE && this->hasCollision() == true))
+	if (this->currentCooldown <= 0.0f)
 	{
-		if (this->currentCooldown <= 0.0f)
-		{
-			this->currentCooldown = 0.0f;
-			this->setCollision(false);
-		}
-		else
-		{
-			this->currentCooldown -= dt;
-		}
+		this->currentCooldown = 0.0f;
+		this->setCollision(false);
+	}
+	else
+	{
+		this->currentCooldown -= dt;
 	}
 }
 

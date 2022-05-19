@@ -14,11 +14,19 @@ void main( void )
 	vec4 texColor = texture( tex1, TexCoord);
 	vec4 finalColor = vec4(0.0f,0.0f,0.0f,1.0f);
 
-	if (mode == 0){
+	if (mode == 0)
+	{
 		finalColor = vec4(Color,alpha);
-	}else{
+	}
+	else
+	{
 		texColor.rgb *= alpha;
 		finalColor = texColor;
+	}
+
+	if (finalColor.a < 0.5)
+	{
+		discard;
 	}
 
 	Color0 = finalColor;

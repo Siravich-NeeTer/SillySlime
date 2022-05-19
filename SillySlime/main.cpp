@@ -134,15 +134,17 @@ int main(void)
 			if (glfwGetKey(window, GLFW_KEY_R) == GLFW_RELEASE && Rdown){Rdown = false;}
 
 			// Check if User want to change level
-			if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && !Ndown){
-				if (gGameStateCurr == LEVEL1){
+			if (state == 3)
+			{
+				if (gGameStateCurr == LEVEL1)
+				{
 					gGameStateNext = LEVEL2;
-				}else{
+				}
+				else
+				{
 					gGameStateNext = LEVEL1;
 				}
-				Ndown = true;
 			}
-			if (glfwGetKey(window, GLFW_KEY_N) == GLFW_RELEASE && Ndown){ Ndown = false; }
 
 			FrameEnd();
 		}

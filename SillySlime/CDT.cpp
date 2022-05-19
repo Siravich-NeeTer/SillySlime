@@ -37,10 +37,10 @@ void CDTInit(int width, int height)
 	cdt_height = height;
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);;
 
 	cdt_programID = LoadShaders("color_tex_transparency.vert", "color_tex_transparency.frag");
 	cdt_blanktex = TextureLoad("blank.png");

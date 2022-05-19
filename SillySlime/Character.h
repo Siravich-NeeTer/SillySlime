@@ -17,6 +17,8 @@ class Character : public GameObject
 	protected:
 		float maxHP;
 		float currentHP;
+		float hitCooldown;
+		float currentHitCooldown;
 		float AGI;
 		bool jumping;
 		Weapon* weapon;
@@ -30,6 +32,8 @@ class Character : public GameObject
 		// Getter
 		float getMaxHP();
 		float getCurrentHP();
+		float getHitCooldown();
+		float getCurrentHitCooldown();
 		float getAGI();
 		bool isJumping();
 		Weapon* getWeapon() const;
@@ -39,6 +43,7 @@ class Character : public GameObject
 		// Setter
 		void setMaxHP(float hp);
 		void setCurrentHP(float hp);
+		void setCurrentHitCooldown(float cooldown);
 		void setAGI(float agi);
 		void setJumping(bool jumping);
 		void setWeapon(Weapon* weapon);
@@ -49,5 +54,6 @@ class Character : public GameObject
 
 
 		// Take Actions
-		void decreaseHP(float hp);
+		virtual void decreaseHP(float hp);
+		void decreaseHitCooldown(float dt);
 };

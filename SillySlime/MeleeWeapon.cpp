@@ -8,6 +8,5 @@ MeleeWeapon::MeleeWeapon()
 
 void MeleeWeapon::Attack()
 {
-	this->setCollision(true);
 	this->setCurrentCooldown(this->getCooldown());
 }

@@ -10,7 +10,13 @@
 
 class Player : public Character
 {
+	private:
+		bool fly;
 	public:
 		Player();
 		void getInput();
+		void decreaseHP(float hp) override;
+		
+		void setFlying(const bool& fly);
+		bool isFlying() const;
 };

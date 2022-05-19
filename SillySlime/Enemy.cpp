@@ -25,6 +25,7 @@ void Enemy::UpdateEnemyState(int** sMapCollisionData, double dt)
 		}
 		else if (this->innerState == ENEMY_INNER_STATE::INNER_STATE_ON_UPDATE)
 		{
+			this->setVelocityX(-MOVE_VELOCITY_ENEMY);
 			int collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x, this->getPosition().y);
 			if (collision & COLLISION_LEFT)
 			{
@@ -68,6 +69,7 @@ void Enemy::UpdateEnemyState(int** sMapCollisionData, double dt)
 		}
 		else if (this->innerState == ENEMY_INNER_STATE::INNER_STATE_ON_UPDATE)
 		{
+			this->setVelocityX(MOVE_VELOCITY_ENEMY);
 			int collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x, this->getPosition().y);
 			if (collision & COLLISION_RIGHT)
 			{
@@ -78,7 +80,7 @@ void Enemy::UpdateEnemyState(int** sMapCollisionData, double dt)
 			}
 			else
 			{
-				collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x + 0.5f, this->getPosition().y);
+				collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x + 0.25f, this->getPosition().y);
 				if (!(collision & COLLISION_BOTTOM))
 				{
 					this->setPositionY((int)this->getPosition().y + 0.5f);

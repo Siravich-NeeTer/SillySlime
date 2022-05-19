@@ -18,10 +18,10 @@
 #define MESH_MAX					64				// The total number of Mesh (Shape)
 #define TEXTURE_MAX					64				// The total number of texture
 #define GAME_OBJ_INST_MAX			1024			// The total number of different game object instances
-#define RESPAWN_TIME				650
+#define RESPAWN_TIME				500
 #define FLAG_INACTIVE				0
 #define FLAG_ACTIVE					1
-#define ANIMATION_SPEED				10				// 1 = fastest (update every frame)
+#define ANIMATION_SPEED				15				// 1 = fastest (update every frame)
 
 // Movement flags
 #define GRAVITY						-37.0f
@@ -44,10 +44,17 @@
 #define SCREEN_SIZE					800.0f
 
 // Convert from Map Space to World Space -> 0.5f is OFFSET
-#define TO_SCREEN_SPACE_X(x)			((x - MAP_WIDTH / 2.0f) * CELL_SIZE)
-#define TO_SCREEN_SPACE_Y(y)			((y - MAP_HEIGHT / 2.0f) * CELL_SIZE)
-#define TO_WORLD_SPACE_X(x)				(SCREEN_SIZE / 2.0f + TO_SCREEN_SPACE_X(x))
-#define TO_WORLD_SPACE_Y(y)				fabs((SCREEN_SIZE / 2.0f + TO_SCREEN_SPACE_Y(y)) - SCREEN_SIZE)
+//#define TO_SCREEN_SPACE_X(x)			((x - MAP_WIDTH / 2.0f) * CELL_SIZE)
+//#define TO_SCREEN_SPACE_Y(y)			((y - MAP_HEIGHT / 2.0f) * CELL_SIZE)
+//#define TO_WORLD_SPACE_X(x)			(SCREEN_SIZE / 2.0f + TO_SCREEN_SPACE_X(x))
+//#define TO_WORLD_SPACE_Y(y)			fabs((SCREEN_SIZE / 2.0f + TO_SCREEN_SPACE_Y(y)) - SCREEN_SIZE)
+//#define TO_MAP_SPACE(x)				(x / CELL_SIZE)
+
+// Convert from Map Space to World Space -> 0.5f is OFFSET
+#define MAP_TO_WORLD_SPACE_X(x)			((x - MAP_WIDTH / 2.0f) * CELL_SIZE)
+#define MAP_TO_WORLD_SPACE_Y(y)			((y - MAP_HEIGHT / 2.0f) * CELL_SIZE)
+#define SCREEN_TO_WORLD_SPACE_X(x,left)	(MAP_TO_WORLD_SPACE_X(left) + x)
+#define SCREEN_TO_WORLD_SPACE_Y(y)		fabs((SCREEN_SIZE / 2.0f + MAP_TO_WORLD_SPACE_Y(y)) - SCREEN_SIZE)
 #define TO_MAP_SPACE(x)					(x / CELL_SIZE)
 
 // -------------------------------------------
@@ -59,6 +66,7 @@ namespace GameState
 	GameObject*  getGameObjectType(int type);
 	GameObject*  GameObjectCreate(GameObject** sGameObjInstArray, CDTMesh* sMeshArray, CDTTex* sTexArray, int type, glm::vec3 pos, glm::vec3 vel, glm::vec3 scale, float orient, bool anim, int numFrame, int currFrame, float offset, int& sNumGameObj);
 	void		 GameObjectDestroy(GameObject* const& pInst, int& sNumGameObj);
+	bool		 willCollide(const GameObject* obj1, const GameObject* obj2, const float& offsetA = 0.0f, const float& offsetB = 0.0f);
 	bool		 isCollide(const GameObject* obj1, const GameObject* obj2, const float& offsetA = 0.0f, const float& offsetB = 0.0f);
 	int			 CheckCharacterMapCollision(int** sMapCollisionData, float PosX, float PosY);
 	int			 CheckBulletMapCollision(int** sMapCollisionData, float PosX, float PosY, float offset);
