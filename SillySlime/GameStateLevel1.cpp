@@ -32,7 +32,7 @@ static int			sPlayerLives;									// The number of lives left
 static int			sScore;
 static int			sRespawnCountdown;								// Respawn player waiting time (in #frame)
 //Sound
-ISoundEngine* SoundEngine;
+static ISoundEngine* SoundEngine;
 // Map data
 static int** sMapData;										// sMapData[Height][Width]
 static int** sMapCollisionData;
@@ -59,7 +59,7 @@ static irrklang::ISoundSource* swordAttack;
 // Game object instant functions
 // -------------------------------------------
 // functions to create/destroy a game object instance
-static GameObject* gameObjInstCreate(int type, glm::vec3 pos, glm::vec3 vel, glm::vec3 scale, float orient, bool anim, int numFrame, int currFrame, float offset)
+static GameObject*  gameObjInstCreate(int type, glm::vec3 pos, glm::vec3 vel, glm::vec3 scale, float orient, bool anim, int numFrame, int currFrame, float offset)
 {
 	return GameState::GameObjectCreate(sGameObjInstArray, sMeshArray, sTexArray, type, pos, vel, scale, orient, anim, numFrame, currFrame, offset, sNumGameObj);
 }
@@ -169,7 +169,7 @@ static bool			checkRaycast(Character* origin, Character* target)
 	}
 	return true;
 }
-static int CheckType(int type)
+static int			CheckType(int type)
 {
 	if (type >= TYPE_ENEMY && type <= TYPE_ENEMY_END)
 	{
@@ -203,10 +203,30 @@ void GameStateLevel1Load(void)
 	//		- The order of mesh MUST follow enum GAMEOBJ_TYPE 
 	/// --------------------------------------------------------------------------
 
-	// Create Player mesh/texture
-	createMeshTex("BG.png", 1.0f, 1.0f);
+	CDTMesh* pMesh;
+	CDTTex* pTex;
+	std::vector<CDTVertex> vertices;
+	CDTVertex v1, v2, v3, v4;
+	v1.x = -1.0f; v1.y = -0.5f; v1.z = 0.0f; v1.r = 1.0f; v1.g = 0.0f; v1.b = 0.0f; v1.u = 0.0f; v1.v = 0.0f;
+	v2.x = 1.0f; v2.y = -0.5f; v2.z = 0.0f; v2.r = 0.0f; v2.g = 1.0f; v2.b = 0.0f; v2.u = 2.0f; v2.v = 0.0f;
+	v3.x = 1.0f; v3.y = 0.5f; v3.z = 0.0f; v3.r = 0.0f; v3.g = 0.0f; v3.b = 1.0f; v3.u = 2.0f; v3.v = 1.0f;
+	v4.x = -1.0f; v4.y = 0.5f; v4.z = 0.0f; v4.r = 1.0f; v4.g = 1.0f; v4.b = 0.0f; v4.u = 0.0f; v4.v = 1.0f;
+	vertices.push_back(v1);
+	vertices.push_back(v2);
+	vertices.push_back(v3);
+	vertices.push_back(v1);
+	vertices.push_back(v3);
+	vertices.push_back(v4);
+
+	pMesh = sMeshArray + sNumMesh++;
+	pTex = sTexArray + sNumTex++;
+	*pMesh = CreateMesh(vertices);
+	*pTex = TextureLoad("BG.png");
+
 	// Create Player mesh/texture
 	createMeshTex("Exit.png", 1.0f, 1.0f);
+	// Create PinkSlime mesh/texture
+	createMeshTex("PinkSlime.png", 1.0f, 1.0f);
 	// Create Player mesh/texture
 	createMeshTex("SlimeSheet.png", 0.25f, 1.0f);
 
@@ -255,6 +275,9 @@ void GameStateLevel1Load(void)
 	createMeshTex("UI_LeftClick.png", 1.0f, 1.0f);
 	// Create UI_RightClick mesh/texture
 	createMeshTex("UI_RightClick.png", 1.0f, 1.0f);
+	// Create UI_RightClick mesh/texture
+	createMeshTex("UI_MissionComplete.png", 1.0f, 1.0f);
+
 	// Create UI_Type(header) mesh/texture
 	createMeshTex("nullOBJ.png", 1.0f, 1.0f);
 	// Create UI_Type_Normal mesh/texture
@@ -265,10 +288,6 @@ void GameStateLevel1Load(void)
 	createMeshTex("UI_ARCHER_Type.png", 1.0f, 1.0f);
 	// Create UI_Type_Mage mesh/texture
 	createMeshTex("UI_MAGE_Type.png", 1.0f, 1.0f);
-
-	// Temporary variable for creating Level mesh
-	std::vector<CDTVertex> vertices;
-	CDTVertex v1, v2, v3, v4;
 
 	// Create Level mesh/texture
 	vertices.clear();
@@ -408,7 +427,7 @@ void GameStateLevel1Init(void)
 			}
 			case 9:
 			{
-				obj = gameObjInstCreate(GAMEOBJ_TYPE::TYPE_ENEMY_ARCHER, glm::vec3(x + 0.5f, (MAP_HEIGHT - y) - 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+				obj = gameObjInstCreate(GAMEOBJ_TYPE::TYPE_ENEMY_ARCHER, glm::vec3(x + 0.5f, (MAP_HEIGHT - y) - 0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 					glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, true, 2, 0, 0.5f);
 				weapon = dynamic_cast<Weapon*>(gameObjInstCreate(GAMEOBJ_TYPE::TYPE_WEAPON_BOW, glm::vec3(obj->getPosition().x, obj->getPosition().y, 2.0f) , glm::vec3(0.0f, 0.0f, 0.0f),
 					glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, false, 0, 0, 0.0f));
@@ -429,7 +448,7 @@ void GameStateLevel1Init(void)
 		}
 	}
 	// BG
-	obj = gameObjInstCreate(GAMEOBJ_TYPE::TYPE_BG, glm::vec3(sPlayer->getPosition().x, MAP_HEIGHT / 2.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+	obj = gameObjInstCreate(GAMEOBJ_TYPE::TYPE_BG, glm::vec3(20.0f, MAP_HEIGHT / 2.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(25.0f, 20.0f, 1.0f), 0.0f, false, 0, 0, 0.0f);
 
 	obj = gameObjInstCreate(GAMEOBJ_TYPE::TYPE_UI_BAR, glm::vec3(sPlayer->getPosition().x + 1.0f, -0.7f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -494,7 +513,7 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 			sPlayer->setJumping(true);
 			sPlayer->setAnimation(false);
 			SoundEngine->removeSoundSource("jump.mp3");
-			SoundEngine->play2D("jump.mp3",false);
+			SoundEngine->play2D("jump.mp3", false);
 		}
 		else if (sPlayer->getWeapon()->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_FIRE_WAND && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		{
@@ -569,7 +588,7 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 					dir_y /= totalVec;
 
 					GameObject* bullet = gameObjInstCreate(dynamic_cast<SpellWeapon*>(weapon)->getBulletType(), weapon->getPosition(), glm::vec3(dir_x * 10.0f * -1.0f, dir_y * 10.0f, 0.0f),
-						glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, false, 0, 0, 0);
+						glm::vec3(0.7f, 0.7f, 1.0f), 0.0f, false, 0, 0, 0);
 					dynamic_cast<Bullet*>(bullet)->setShooter(sPlayer);
 					dynamic_cast<Bullet*>(bullet)->setATK(weapon->getATK());
 					SoundEngine->play2D(fireSpell, false);
@@ -670,9 +689,9 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 			continue;
 		}
 		// If Objects are out of range [sLimitLeft, sLimitRight] -> set cull to true
-		if (pInst->getPosition().x < sLimitLeft || pInst->getPosition().x > sLimitRight)
+		if (pInst->getPosition().x < sLimitLeft - 2.0f || pInst->getPosition().x > sLimitRight + 2.0f)
 		{
-			if (!(pInst->getType() >= GAMEOBJ_TYPE::TYPE_UI))
+			if (!(pInst->getType() >= GAMEOBJ_TYPE::TYPE_UI || pInst->getType() == GAMEOBJ_TYPE::TYPE_BG))
 			{
 				pInst->setCulling(true);
 			}
@@ -742,6 +761,15 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 				continue;
 			}
 
+			if (enemy->getCurrentHitCooldown() > 0)
+			{
+				enemy->decreaseHitCooldown(dt);
+				if (enemy->getCurrentHitCooldown() < 0)
+				{
+					enemy->setCurrentHitCooldown(0.0f);
+				}
+			}
+
 			enemy->UpdateEnemyState(sMapCollisionData, dt);
 
 			// Check Raycast -> Attack Player
@@ -769,7 +797,7 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 					else
 					{
 						bullet = gameObjInstCreate(dynamic_cast<SpellWeapon*>(weapon)->getBulletType(), weapon->getPosition(), glm::vec3(dir_x * 10.0f, dir_y * 10.0f, 0.0f),
-							glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, false, 0, 0, 0);
+							glm::vec3(0.7f, 0.7f, 1.0f), 0.0f, false, 0, 0, 0);
 						dynamic_cast<Bullet*>(bullet)->setATK(weapon->getATK());
 						SoundEngine->play2D(fireSpell, false);
 					}
@@ -779,13 +807,13 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 				enemy->setVelocityX(0.0f);
 			}
 
-			if (pInst->getVelocity().x < 0)
+			if (pInst->getVelocity().x < 0 && pInst->getScale().x > 0)
 			{
-				pInst->setScaleX(-1.0f);
+				pInst->setScaleX(pInst->getScale().x * -1);
 			}
-			else if (pInst->getVelocity().x > 0)
+			else if (pInst->getVelocity().x > 0 && pInst->getScale().x < 0)
 			{
-				pInst->setScaleX(1.0f);
+				pInst->setScaleX(pInst->getScale().x * -1);
 			}
 
 			// Update enemy position
@@ -794,39 +822,58 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 		// If pInst is weapon
 		else if (dynamic_cast<Weapon*>(pInst) != nullptr)
 		{
-			Weapon* weapon = dynamic_cast<Weapon*>(pInst);
-			if (weapon->getHolder() == nullptr)
+		Weapon* weapon = dynamic_cast<Weapon*>(pInst);
+		if (weapon->getHolder() == nullptr)
+		{
+			if (weapon->getType() != GAMEOBJ_TYPE::TYPE_WEAPON_SWORD)
 			{
-				if (weapon->getType() != GAMEOBJ_TYPE::TYPE_WEAPON_SWORD)
-				{
-					weapon->setOffsetX(0.5f);
-				}
-				else
-				{
-					weapon->setOffsetX(0.75f);
-				}
-				weapon->setOrientation(0);
-				weapon->setCollision(true);
-				continue;
+				weapon->setOffsetX(0.5f);
 			}
-			weapon->updateWeaponDirection();
-			weapon->updateWeaponCooldown(dt);
+			else
+			{
+				weapon->setOffsetX(0.75f);
+			}
+			weapon->setOrientation(0);
+			weapon->setCollision(true);
+			continue;
+		}
+		weapon->updateWeaponDirection();
+		weapon->updateWeaponCooldown(dt);
 		}
 		else if (pInst->getType() >= GAMEOBJ_TYPE::TYPE_WEAPON_BULLET && pInst->getType() < GAMEOBJ_TYPE::TYPE_UI)
 		{
-			if (pInst->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_BOW_ARROW || pInst->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_SLIME_BALL)
-			{
-				pInst->increaseVelocityY(GRAVITY * dt);
-			}
-			// Update enemy position
-			pInst->updatePosition(pInst->getVelocity() * glm::vec3(dt, dt, 0.0f));
+		if (pInst->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_BOW_ARROW || pInst->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_SLIME_BALL)
+		{
+			pInst->increaseVelocityY(GRAVITY * dt);
+		}
+		// Update enemy position
+		pInst->updatePosition(pInst->getVelocity() * glm::vec3(dt, dt, 0.0f));
 		}
 		else if (pInst->getType() == GAMEOBJ_TYPE::TYPE_BG)
 		{
-			if (!(MAP_TO_WORLD_SPACE_X(sPlayer->getPosition().x + 1) < MAP_TO_WORLD_SPACE_X(1.0f) + SCREEN_SIZE / 2.0f
+			if ((MAP_TO_WORLD_SPACE_X(sPlayer->getPosition().x + 1) < MAP_TO_WORLD_SPACE_X(1.0f) + SCREEN_SIZE / 2.0f
 				|| MAP_TO_WORLD_SPACE_X(sPlayer->getPosition().x + 1) > MAP_TO_WORLD_SPACE_X(MAP_WIDTH - 1) - SCREEN_SIZE / 2.0f))
 			{
-				pInst->setPositionX(sPlayer->getPosition().x);
+				continue;
+			}
+
+			int collisionFlag = GameState::CheckCharacterMapCollision(sMapCollisionData, sPlayer->getPosition().x, sPlayer->getPosition().y, sPlayer->getScale().x, sPlayer->getScale().y);
+
+			if (!(collisionFlag & COLLISION_RIGHT || collisionFlag & COLLISION_LEFT) && sPlayer->getVelocity().x > 0.0f)
+			{
+				pInst->setPositionX(pInst->getPosition().x + dt);
+				if (sPlayer->getPosition().x > pInst->getPosition().x + pInst->getScale().x / 2.0f)
+				{
+					pInst->setPositionX(sPlayer->getPosition().x + pInst->getScale().x / 2.0f);
+				}
+			}
+			else if (!(collisionFlag & COLLISION_RIGHT || collisionFlag & COLLISION_LEFT) && sPlayer->getVelocity().x < 0.0f)
+			{
+				pInst->setPositionX(pInst->getPosition().x - dt);
+				if (sPlayer->getPosition().x < pInst->getPosition().x - pInst->getScale().x / 2.0f)
+				{
+					pInst->setPositionX(sPlayer->getPosition().x - pInst->getScale().x / 2.0f);
+				}
 			}
 		}
 		else if (pInst->getType() == GAMEOBJ_TYPE::TYPE_UI_BAR)
@@ -868,7 +915,7 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 				pInst->setPositionX(sPlayer->getPosition().x - 4.0f - (1.0f - (sPlayer->getCurrentHP() / sPlayer->getMaxHP())) * 2.5f);
 			}
 		}
-		else if(pInst->getType() >= GAMEOBJ_TYPE::TYPE_UI_TYPE)
+		else if (pInst->getType() >= GAMEOBJ_TYPE::TYPE_UI_TYPE)
 		{
 			if (sPlayer->getWeapon()->getType() == GAMEOBJ_TYPE::TYPE_WEAPON_SWORD && pInst->getType() != GAMEOBJ_TYPE::TYPE_UI_TYPE_WARRIOR)
 			{
@@ -957,7 +1004,7 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 		if (pInst->getType() == GAMEOBJ_TYPE::TYPE_PLAYER)
 		{
 			// Update Player position, velocity, jumping states when the player collide with the map
-			int collisionFlag = GameState::CheckCharacterMapCollision(sMapCollisionData, sPlayer->getPosition().x, sPlayer->getPosition().y);
+			int collisionFlag = GameState::CheckCharacterMapCollision(sMapCollisionData, sPlayer->getPosition().x, sPlayer->getPosition().y, sPlayer->getScale().x, sPlayer->getScale().y);
 
 			// Collide Left
 			if (collisionFlag & COLLISION_LEFT)
@@ -1053,12 +1100,14 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 					// If hit directly to Enemy HP -20
 					sPlayer->decreaseHP(20.0f);
 					sPlayer->setCurrentHitCooldown(sPlayer->getHitCooldown());
+					sPlayer->setHurt(true);
 					std::cout << "GOT HIT\n";
 				}
 				else if (dynamic_cast<Bullet*>(pInst2) != nullptr && dynamic_cast<Bullet*>(pInst2)->getShooter() != sPlayer && collide)
 				{
 					sPlayer->decreaseHP(dynamic_cast<Bullet*>(pInst2)->getATK());
 					gameObjInstDestroy(pInst2);
+					sPlayer->setHurt(HURTING_FRAME);
 					std::cout << "GOT HIT\n";
 				}
 				else if (GameState::willCollide(pInst1, pInst2, COLLISION_OFFSET, COLLISION_OFFSET) && pInst2->getType() == TYPE_WEAPON_SWORD && dynamic_cast<Weapon*>(pInst2)->getHolder() != nullptr && dynamic_cast<Weapon*>(pInst2)->getCurrentCooldown() <= 0.0f)
@@ -1077,6 +1126,7 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 				{
 					sPlayer->decreaseHP(dynamic_cast<MeleeWeapon*>(pInst2)->getATK());
 					sPlayer->setCurrentHitCooldown(sPlayer->getHitCooldown());
+					sPlayer->setHurt(HURTING_FRAME);
 					std::cout << "GOT HIT\n";
 				}
 
@@ -1092,15 +1142,18 @@ void GameStateLevel1Update(double dt, long frame, int& state)
 					SoundEngine->play2D("die.mp3");
 				}
 			}
-			else if (pInst1->getType() == TYPE_WEAPON_SWORD && pInst1 == sPlayer->getWeapon() && CheckType(pInst2->getType()) == TYPE_ENEMY && collide)
+			else if (pInst1->getType() == TYPE_WEAPON_SWORD && pInst1 == sPlayer->getWeapon() && CheckType(pInst2->getType()) == TYPE_ENEMY && dynamic_cast<Character*>(pInst2)->getCurrentHitCooldown() <= 0 && collide)
 			{
 				Character* enemy = dynamic_cast<Character*>(pInst2);
 				enemy->decreaseHP(dynamic_cast<MeleeWeapon*>(pInst1)->getATK());
+				enemy->setHurt(HURTING_FRAME);
+				enemy->setCurrentHitCooldown(enemy->getHitCooldown());
 			}
 			else if (CheckType(pInst1->getType()) == TYPE_ENEMY && dynamic_cast<Bullet*>(pInst2) != nullptr && dynamic_cast<Bullet*>(pInst2)->getShooter() == sPlayer && collide)
 			{
 				Character* enemy = dynamic_cast<Character*>(pInst1);
 				enemy->decreaseHP(dynamic_cast<Bullet*>(pInst2)->getATK());
+				enemy->setHurt(HURTING_FRAME);
 				gameObjInstDestroy(pInst2);
 				break;
 			}
@@ -1197,9 +1250,18 @@ void GameStateLevel1Draw(void) {
 		matTransform = sMapMatrix * pInst->getModelMatrix();
 
 		SetRenderMode(CDT_TEXTURE, 1.0f);
-		SetTexture(*pInst->getTexture(), pInst->getOffsetX(), pInst->getOffsetY());
+		SetTexture(*pInst->getTexture(), pInst->getOffsetX(), pInst->getOffsetY(), pInst->isHurt());
 		SetTransform(matTransform);
 		DrawMesh(*pInst->getMesh());
+
+		if (pInst->isHurt() > 0)
+		{
+			pInst->setHurt(pInst->isHurt() - 1);
+			if (pInst->isHurt() == 0)
+			{
+				pInst->setHurt(false);
+			}
+		}
 	}
 
 

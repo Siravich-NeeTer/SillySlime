@@ -238,7 +238,7 @@ void SetRenderMode(int mode, float alpha)
 
 }
 
-void SetTexture(CDTTex tex, float offsetX, float offsetY)
+void SetTexture(CDTTex tex, float offsetX, float offsetY, bool gotHit)
 {
 	glUniform1f(glGetUniformLocation(cdt_programID, "offsetX"), offsetX);
 	glUniform1f(glGetUniformLocation(cdt_programID, "offsetY"), offsetY);
@@ -246,6 +246,7 @@ void SetTexture(CDTTex tex, float offsetX, float offsetY)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(glGetUniformLocation(cdt_programID, "tex1"), 0);
+	glUniform1i(glGetUniformLocation(cdt_programID, "red"), (gotHit ? 1 : 0));
 }
 
 void SetTransform(const glm::mat4 &modelMat)

@@ -14,7 +14,7 @@ GameObject* GameState::getGameObjectType(int type)
 	else if (type == GAMEOBJ_TYPE::TYPE_WEAPON_SWORD)
 	{
 		obj =  new MeleeWeapon();
-		dynamic_cast<MeleeWeapon*>(obj)->setATK(15.0f);
+		dynamic_cast<MeleeWeapon*>(obj)->setATK(40.0f);
 		dynamic_cast<MeleeWeapon*>(obj)->setCooldown(1.5f);
 		obj->setCollision(false);
 	}
@@ -23,13 +23,13 @@ GameObject* GameState::getGameObjectType(int type)
 		obj = new RangeWeapon();
 		dynamic_cast<RangeWeapon*>(obj)->setATK(25.0f);
 		dynamic_cast<RangeWeapon*>(obj)->setBulletType(TYPE_WEAPON_BOW_ARROW);
-		dynamic_cast<RangeWeapon*>(obj)->setCooldown(0.75f);
+		dynamic_cast<RangeWeapon*>(obj)->setCooldown(0.5f);
 		obj->setCollision(false);
 	}
 	else if (type == GAMEOBJ_TYPE::TYPE_WEAPON_FIRE_WAND)
 	{
 		obj = new SpellWeapon();
-		dynamic_cast<SpellWeapon*>(obj)->setATK(30.0f);
+		dynamic_cast<SpellWeapon*>(obj)->setATK(35.0f);
 		dynamic_cast<SpellWeapon*>(obj)->setBulletType(TYPE_WEAPON_FIRE_SPELL);
 		dynamic_cast<SpellWeapon*>(obj)->setCooldown(0.75f);
 		obj->setCollision(false);
@@ -48,15 +48,15 @@ GameObject* GameState::getGameObjectType(int type)
 		obj = new Enemy();
 		if (type == GAMEOBJ_TYPE::TYPE_ENEMY_WARRIOR)
 		{
-			dynamic_cast<Enemy*>(obj)->setMaxHP(110.0f);
+			dynamic_cast<Enemy*>(obj)->setMaxHP(70.0f);
 		}
 		else if (type == GAMEOBJ_TYPE::TYPE_ENEMY_ARCHER)
 		{
-			dynamic_cast<Enemy*>(obj)->setMaxHP(90.0f);
+			dynamic_cast<Enemy*>(obj)->setMaxHP(50.0f);
 		}
 		else
 		{
-			dynamic_cast<Enemy*>(obj)->setMaxHP(75.0f);
+			dynamic_cast<Enemy*>(obj)->setMaxHP(40.0f);
 		}
 	}
 	else if (type == GAMEOBJ_TYPE::TYPE_PLAYER)
@@ -98,6 +98,7 @@ GameObject* GameState::GameObjectCreate(GameObject** sGameObjInstArray, CDTMesh*
 			pInst->setOffset(offset);
 			pInst->setOffsetX(0);
 			pInst->setOffsetY(0);
+			pInst->setHurt(0);
 
 			sNumGameObj++;
 			sGameObjInstArray[i] = pInst;
@@ -150,30 +151,33 @@ bool GameState::isCollide(const GameObject* obj1, const GameObject* obj2, const 
 //+ This fucntion return collison flags
 //	- 1-left, 2-right, 4-top, 8-bottom 
 //	- each side is checked with 2 hot spots
-int GameState::CheckCharacterMapCollision(int** sMapCollisionData, float PosX, float PosY)
+int GameState::CheckCharacterMapCollision(int** sMapCollisionData, float PosX, float PosY, float offsetX, float offsetY)
 {
+	offsetX = fabs(offsetX) / 2.0f;
+	offsetY = fabs(offsetY) / 2.0f;
+
 	int result = 0;
 
 	// Check Left Collision
-	if (sMapCollisionData[(int)(PosY + 0.25f)][(int)(PosX - 0.5f)] || sMapCollisionData[(int)(PosY - 0.25f)][(int)(PosX - 0.5f)])
+	if (sMapCollisionData[(int)(PosY + offsetY / 2.0f)][(int)(PosX - offsetX)] || sMapCollisionData[(int)(PosY - offsetY / 2.0f)][(int)(PosX - offsetX)])
 	{
 		result |= COLLISION_LEFT;
 	}
 
 	// Check Right Collision
-	if (sMapCollisionData[(int)(PosY + 0.25f)][(int)(PosX + 0.5f)] || sMapCollisionData[(int)(PosY - 0.25f)][(int)(PosX + 0.5f)])
+	if (sMapCollisionData[(int)(PosY + offsetY / 2.0f)][(int)(PosX + offsetX)] || sMapCollisionData[(int)(PosY - offsetY / 2.0f)][(int)(PosX + offsetX)])
 	{
 		result |= COLLISION_RIGHT;
 	}
 
 	// Check Top Collision
-	if (sMapCollisionData[(int)(PosY + 0.5f)][(int)(PosX - 0.25f)] || sMapCollisionData[(int)(PosY + 0.5f)][(int)(PosX + 0.25f)])
+	if (sMapCollisionData[(int)(PosY + offsetY)][(int)(PosX - offsetX / 2.0f)] || sMapCollisionData[(int)(PosY + offsetY)][(int)(PosX + offsetX / 2.0f)])
 	{
 		result |= COLLISION_TOP;
 	}
 
 	// Check Bottom Collision (Special : Y Need to be lower)
-	if (sMapCollisionData[(int)(PosY - 0.6f)][(int)(PosX - 0.25f)] || sMapCollisionData[(int)(PosY - 0.6f)][(int)(PosX + 0.25f)])
+	if (sMapCollisionData[(int)(PosY - offsetY - 0.1f)][(int)(PosX - offsetX / 2.0f)] || sMapCollisionData[(int)(PosY - offsetY - 0.1f)][(int)(PosX + offsetX / 2.0f)])
 	{
 		result |= COLLISION_BOTTOM;
 	}

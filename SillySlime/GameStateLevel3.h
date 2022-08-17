@@ -20,7 +20,7 @@ extern GLFWwindow* window;
 
 void GameStateLevel3Load(void);
 void GameStateLevel3Init(void);
-void GameStateLevel3Update(double dt);
+void GameStateLevel3Update(double dt, long frame, int& state);
 void GameStateLevel3Draw(void);
 void GameStateLevel3Free(void);
 void GameStateLevel3Unload(void);

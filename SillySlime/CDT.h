@@ -93,7 +93,7 @@ void ResetCam();
 // -------------------------------------------
 
 void SetRenderMode(int mode, float alpha);
-void SetTexture(CDTTex tex, float offsetX, float offsetY);
+void SetTexture(CDTTex tex, float offsetX, float offsetY, bool gotHit = false);
 void SetTransform(const glm::mat4 &modelMat);
 
 

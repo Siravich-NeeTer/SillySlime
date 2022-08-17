@@ -12,6 +12,7 @@ enum GAMEOBJ_TYPE
 	// list of game object types
 	TYPE_BG = 0,
 	TYPE_EXIT,
+	TYPE_PINK_SLIME,
 	TYPE_PLAYER,
 
 	TYPE_ENEMY,
@@ -38,6 +39,7 @@ enum GAMEOBJ_TYPE
 	TYPE_UI_JUMP,
 	TYPE_UI_LEFT_CLICK,
 	TYPE_UI_RIGHT_CLICK,
+	TYPE_UI_MISSION_COMPLETE,
 	TYPE_UI_TYPE,
 	TYPE_UI_TYPE_NORMAL,
 	TYPE_UI_TYPE_WARRIOR,
@@ -67,6 +69,7 @@ class GameObject
 		float			offsetY;			// will be set to 0 for this single row implementation
 		bool			collision;			// Used for check collision
 		bool			cull;
+		int			hurt;				// If Object hurt -> Turn Red
 		
 	public:
 		virtual ~GameObject();
@@ -96,6 +99,7 @@ class GameObject
 		float getOffsetY() const;
 		bool hasCollision() const;
 		bool isCulling() const;
+		int isHurt() const;
 
 		//Setter
 		void setMesh(CDTMesh* mesh);
@@ -131,4 +135,5 @@ class GameObject
 		
 		void setCollision(const bool& collision);
 		void setCulling(const bool& cull);
+		void setHurt(const int& hurt);
 };

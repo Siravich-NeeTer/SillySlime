@@ -1,12 +1,3 @@
-// ---------------------------------------------------------------------------
-// Goal:		game state managment demo with framerate
-// Usage:		press S to step between each frame
-//				press R to restart the level
-//				press N to change the level
-//				press esc to quit
-// ---------------------------------------------------------------------------
-
-
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,9 +18,10 @@ GLFWwindow* window;
 #include "CDT.h"
 #include "GameStateLevel1.h"
 #include "GameStateLevel2.h"
+#include "GameStateLevel3.h"
 
 // game state list
-enum{ LEVEL1 = 0, LEVEL2, RESTART, QUIT };
+enum{ LEVEL1 = 0, LEVEL2, LEVEL3, RESTART, QUIT };
 
 // variables to keep track the current, previous and next game state
 unsigned int	gGameStateInit;
@@ -63,7 +55,7 @@ int main(void)
 {
 
 	// Initialize the System (GFW, GLEW, Input, Create window)
-	SystemInit(win_width, win_height, "Mario Demo");
+	SystemInit(win_width, win_height, "Silly Slime");
 	CDTInit(win_width, win_height);
 
 	// Initialize Game State (to level 1)
@@ -79,7 +71,19 @@ int main(void)
 			gGameStateCurr = gGameStatePrev;
 			gGameStateNext = gGameStateCurr;
 		}
-		else if (gGameStateCurr == LEVEL2){
+		else if (gGameStateCurr == LEVEL3)
+		{
+
+			GameStateLoad = GameStateLevel3Load;
+			GameStateInit = GameStateLevel3Init;
+			GameStateUpdate = GameStateLevel3Update;
+			GameStateDraw = GameStateLevel3Draw;
+			GameStateFree = GameStateLevel3Free;
+			GameStateUnload = GameStateLevel3Unload;
+			GameStateLoad();
+		}
+		else if (gGameStateCurr == LEVEL2)
+		{
 			GameStateLoad	= GameStateLevel2Load;
 			GameStateInit	= GameStateLevel2Init;
 			GameStateUpdate = GameStateLevel2Update;
@@ -139,6 +143,10 @@ int main(void)
 				if (gGameStateCurr == LEVEL1)
 				{
 					gGameStateNext = LEVEL2;
+				}
+				else if (gGameStateCurr == LEVEL2)
+				{
+					gGameStateNext = LEVEL3;
 				}
 				else
 				{

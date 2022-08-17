@@ -45,6 +45,7 @@ float GameObject::getOffsetX() const { return this->offsetX; }
 float GameObject::getOffsetY() const { return this->offsetY; }
 bool GameObject::hasCollision() const { return this->collision; }
 bool GameObject::isCulling() const { return this->cull; }
+int GameObject::isHurt() const { return this->hurt; }
 
 // Setter Implement
 void GameObject::setMesh(CDTMesh* mesh) { this->mesh = mesh; }
@@ -78,3 +79,4 @@ void GameObject::setOffsetY(const float& y) { this->offsetY = y; }
 
 void GameObject::setCollision(const bool& collision) { this->collision = collision; }
 void GameObject::setCulling(const bool& cull) { this->cull = cull; }
+void GameObject::setHurt(const int& hurt) { this->hurt = hurt; }

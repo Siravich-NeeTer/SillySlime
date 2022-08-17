@@ -25,10 +25,9 @@
 
 // Movement flags
 #define GRAVITY						-37.0f
-#define JUMP_VELOCITY				18.0f
-#define MOVE_VELOCITY_PLAYER		5.0f
 #define MOVE_VELOCITY_ENEMY			2.0f
 #define ENEMY_IDLE_TIME				2.0f
+#define HURTING_FRAME				5
 
 // Collision flags
 #define	COLLISION_LEFT				1<<0
@@ -68,6 +67,6 @@ namespace GameState
 	void		 GameObjectDestroy(GameObject* const& pInst, int& sNumGameObj);
 	bool		 willCollide(const GameObject* obj1, const GameObject* obj2, const float& offsetA = 0.0f, const float& offsetB = 0.0f);
 	bool		 isCollide(const GameObject* obj1, const GameObject* obj2, const float& offsetA = 0.0f, const float& offsetB = 0.0f);
-	int			 CheckCharacterMapCollision(int** sMapCollisionData, float PosX, float PosY);
+	int			 CheckCharacterMapCollision(int** sMapCollisionData, float PosX, float PosY, float offsetX, float offsetY);
 	int			 CheckBulletMapCollision(int** sMapCollisionData, float PosX, float PosY, float offset);
 }

@@ -26,7 +26,7 @@ void Enemy::UpdateEnemyState(int** sMapCollisionData, double dt)
 		else if (this->innerState == ENEMY_INNER_STATE::INNER_STATE_ON_UPDATE)
 		{
 			this->setVelocityX(-MOVE_VELOCITY_ENEMY);
-			int collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x, this->getPosition().y);
+			int collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x, this->getPosition().y, this->getScale().x, this->getScale().y);
 			if (collision & COLLISION_LEFT)
 			{
 				this->setPositionX((int)this->getPosition().x + 0.5f);
@@ -36,7 +36,7 @@ void Enemy::UpdateEnemyState(int** sMapCollisionData, double dt)
 			}
 			else
 			{
-				collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x - 0.5f, this->getPosition().y);
+				collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x - 0.5f, this->getPosition().y, this->getScale().x, this->getScale().y);
 				if (!(collision & COLLISION_BOTTOM))
 				{
 					this->setPositionY((int)this->getPosition().y + 0.5f);
@@ -70,7 +70,7 @@ void Enemy::UpdateEnemyState(int** sMapCollisionData, double dt)
 		else if (this->innerState == ENEMY_INNER_STATE::INNER_STATE_ON_UPDATE)
 		{
 			this->setVelocityX(MOVE_VELOCITY_ENEMY);
-			int collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x, this->getPosition().y);
+			int collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x, this->getPosition().y, this->getScale().x, this->getScale().y);
 			if (collision & COLLISION_RIGHT)
 			{
 				this->setPositionX((int)this->getPosition().x + 0.5f);
@@ -80,7 +80,7 @@ void Enemy::UpdateEnemyState(int** sMapCollisionData, double dt)
 			}
 			else
 			{
-				collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x + 0.25f, this->getPosition().y);
+				collision = GameState::CheckCharacterMapCollision(sMapCollisionData, this->getPosition().x + 0.25f, this->getPosition().y, this->getScale().x, this->getScale().y);
 				if (!(collision & COLLISION_BOTTOM))
 				{
 					this->setPositionY((int)this->getPosition().y + 0.5f);

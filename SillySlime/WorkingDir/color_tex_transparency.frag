@@ -6,6 +6,7 @@ in vec2 TexCoord;
 uniform sampler2D tex1;
 uniform float alpha;
 uniform int mode;			//0 - color, 1 - texture
+uniform int red;
 
 out vec4 Color0;
 
@@ -27,6 +28,11 @@ void main( void )
 	if (finalColor.a < 0.5)
 	{
 		discard;
+	}
+
+	if (red == 1)
+	{
+		finalColor.r = 1.0f;
 	}
 
 	Color0 = finalColor;
