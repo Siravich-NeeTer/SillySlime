@@ -13,3 +13,5 @@ Inspired from Kirby
 - Right Click to eat enemies
 
 **Library** : GLFW / GLAD / GLM / irrKlang / SOIL / CDTLib
+
+![Screenshot](SillySlime/WorkingDir/GamePlay.png)
